@@ -1,7 +1,8 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import API from "../APi/axiosinstance";
 import { endpoints } from "../APi/apiendpoint";
 import { CartContext } from "../Context/CartContext";
+import type { Product } from "../types/product.type";
 import {
   Box,
   Card,
@@ -15,14 +16,12 @@ import {
 import { toast } from "sonner";
 
 const Products = () => {
-  const [productList, setProductList] = useState([]);
-
-
+  const [productList, setProductList] = useState<Product[]>([]);
   const cartContext = useContext(CartContext);
 
   const Productfetch = async () => {
     try {
-      const res = await API.get(endpoints.products);
+      const res = await API.get<Product[]>(endpoints.products);
       setProductList(res.data);
     } catch (error) {
       console.log(error);
@@ -40,18 +39,10 @@ const Products = () => {
           display: "flex",
           flexWrap: "wrap",
           gap: 3,
-          justifyContent: "flex-start",
         }}
       >
         {productList.map((product) => (
-          <Card
-            key={product.id}
-            sx={{
-              width: 260,
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
+          <Card key={product.id} sx={{ width: 260 }}>
             <CardMedia
               component="img"
               height="180"
@@ -60,8 +51,8 @@ const Products = () => {
               sx={{ objectFit: "contain", p: 2 }}
             />
 
-            <CardContent sx={{ flexGrow: 1 }}>
-              <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+            <CardContent>
+              <Typography variant="subtitle1" fontWeight={600}>
                 {product.title}
               </Typography>
 
@@ -75,20 +66,17 @@ const Products = () => {
                 fullWidth
                 variant="contained"
                 onClick={() => {
-                  if (cartContext) {
-                    cartContext.dispatch({
-                      type: "ADD_ITEM",
-                      payload: {
-                        id: product.id,
-                        title: product.title,
-                        price: product.price,
-                        image: product.image,
-                        quantity: 1,
-                      },
-                    
-                    });
-                  }
-                  toast("product added")
+                  cartContext.dispatch({
+                    type: "ADD_ITEM",
+                    payload: {
+                      id: product.id,
+                      title: product.title,
+                      price: product.price,
+                      image: product.image,
+                      quantity: 1,
+                    },
+                  });
+                  toast("Product added");
                 }}
               >
                 Add to Cart
