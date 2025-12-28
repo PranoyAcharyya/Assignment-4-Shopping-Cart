@@ -12,25 +12,48 @@ import {
   Typography,
   Button,
   Container,
+  CircularProgress,
 } from "@mui/material";
 import { toast } from "sonner";
 
 const Products = () => {
   const [productList, setProductList] = useState<Product[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const cartContext = useContext(CartContext);
 
   const Productfetch = async () => {
+    setLoading(true);
     try {
       const res = await API.get<Product[]>(endpoints.products);
       setProductList(res.data);
     } catch (error) {
       console.log(error);
+    }finally {
+      setLoading(false); 
     }
   };
 
   useEffect(() => {
     Productfetch();
   }, []);
+
+
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "80vh",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+
 
   return (
     <Container sx={{ mt: 4 }}>
