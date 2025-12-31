@@ -1,6 +1,6 @@
-import { createContext, useReducer} from 'react'
-import type { ReactNode,Dispatch } from 'react';
-import { cartReducer, initialState } from '../Reducer/CartReducer'
+import { createContext, useReducer, useEffect } from "react";
+import type { ReactNode, Dispatch } from "react";
+import { cartReducer, initialState } from "../Reducer/CartReducer";
 import type { CartState, CartAction } from "../types/cart.types";
 
 interface CartContextType {
@@ -13,15 +13,16 @@ export const CartContext = createContext<CartContextType>({
   dispatch: () => null,
 });
 
+export const CartProvider = ({ children }: { children: ReactNode }) => {
+  const [cart, dispatch] = useReducer(cartReducer, initialState);
 
-export const CartProvider = ({children}:{children: ReactNode}) => {
-    const [cart,dispatch] = useReducer(cartReducer,initialState);
+  useEffect(() => {
+    localStorage.setItem("cartItems", JSON.stringify(cart.cartItems));
+  }, [cart.cartItems]);
 
-    return (
-
-        <CartContext.Provider value={{cart,dispatch}}>
-            {children}
-        </CartContext.Provider>
-    )
-}
-
+  return (
+    <CartContext.Provider value={{ cart, dispatch }}>
+      {children}
+    </CartContext.Provider>
+  );
+};
